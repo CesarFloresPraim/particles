@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 import { Galaxy } from "./objects/galaxy";
+import { generateQuadTree } from "./barnes-hut/quad-tree";
 
 let camera, scene, renderer, controls, orbit;
 let galaxy;
@@ -20,10 +21,11 @@ function init() {
 
   // Create Galaxy
   galaxy = new Galaxy(scene);
+  generateQuadTree(galaxy);
 
   // Helpers
   //scene.add(new THREE.GridHelper(400, 100));
-  scene.add(new THREE.AxesHelper(100));
+  scene.add(new THREE.AxesHelper(400));
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -45,9 +47,7 @@ function init() {
 function animate() {
   requestAnimationFrame(animate);
   controls.update();
-  galaxy.updateScale(camera);
-
-  //console.log(galaxy.stars[0]);
+  //galaxy.updateScale(camera);
 
   renderer.render(scene, camera);
 }
