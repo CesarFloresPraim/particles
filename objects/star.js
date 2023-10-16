@@ -41,7 +41,8 @@ export class Star {
     let sprite = new THREE.Sprite(materials[this.type]);
     // sprite.layers.set(BLOOM_LAYER);
 
-    sprite.scale.multiplyScalar(types.size[this.type]);
+    // sprite.scale.multiplyScalar(types.size[this.type]);
+    sprite.scale.multiplyScalar(10);
     sprite.position.copy(this.position);
 
     this.obj = sprite;

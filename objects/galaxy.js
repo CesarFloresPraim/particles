@@ -4,7 +4,7 @@ import { Star } from "./star";
 export class Galaxy {
   constructor(scene) {
     this.scene = scene;
-    this.stars = this.generateObject(250, (pos) => new Star(pos));
+    this.stars = this.generateObject(6, (pos) => new Star(pos));
     this.suns = [];
 
     this.stars.forEach((star) => star.toThreeObject(scene));
