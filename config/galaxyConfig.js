@@ -1,4 +1,5 @@
-export const NUM_STARS = 7000
+export const NUM_STARS = 10
+export const NUM_PLANETS = 100
 export const NUM_ARMS = 4
 
 export const GALAXY_THICKNESS = 5

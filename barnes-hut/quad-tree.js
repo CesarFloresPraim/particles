@@ -1,12 +1,12 @@
 import * as THREE from "three";
 import { Galaxy } from "../objects/galaxy";
+import { Z_POSITION } from "../config/sceneConfig";
 
-const COORDINATES_SIZE = 800; // = DISTANCE FROM CENTER TO EDGE * 2
+const COORDINATES_SIZE = Z_POSITION * 2; // = DISTANCE FROM CENTER TO EDGE * 2
 
 class QuadTreeNode {
-  constructor(data, level) {
+  constructor(data) {
     this.data = data;
-    this.level = level;
     this.mass = 0;
     this.ne = null;
     this.nw = null;
@@ -16,13 +16,8 @@ class QuadTreeNode {
 }
 
 class QuadTree {
-  constructor() {
-    this.level = 0;
-    this.mass = 0;
-    this.ne = null;
-    this.nw = null;
-    this.se = null;
-    this.sw = null;
+  constructor(head= null) {
+    this.head = head;
   }
 }
 
@@ -127,60 +122,54 @@ const generate4QuadrantCorners = (center, currentGridSize) => {
   return [quad1, quad2, quad3, quad4];
 };
 
-let maxDepth = 20;
+const getMassOfElement = (element) => {
+  return element.getMass();
+};
+
 const buildQuadTree = (
-  stars,
+  elements,
   currentGridSize,
   currentCenter,
-  quadTree,
   needSplit,
   currentQuadrant,
   quadrants,
   currentNode
 ) => {
-  maxDepth -= 1;
-  if (maxDepth <= 0) {
-    console.log("ended fake");
-    return;
-  }
+  let completedNode = null;
+
   while (currentQuadrant < 4) {
     if (needSplit) {
       quadrants = generate4QuadrantCorners(currentCenter, currentGridSize);
       needSplit = false;
     }
 
-    let foundIdx = stars.findIndex((star) => {
+    let foundIdx = elements.findIndex((star) => {
       return checkIfInBounds(star, quadrants[currentQuadrant]);
     });
 
     let node = null;
 
     if (foundIdx !== -1) {
-      let foundStar = stars[foundIdx];
-      stars.splice(foundIdx, 1);
-      node = new QuadTreeNode(foundStar, quadTree.level + 1);
+      let foundStar = elements[foundIdx];
+      let mass = getMassOfElement(foundStar);
+      elements.splice(foundIdx, 1);
+      node = new QuadTreeNode(foundStar);
 
       if (currentQuadrant == 0 && currentNode.ne == null) {
         currentNode.ne = node;
-        currentNode.mass += 1;
+        currentNode.ne.mass += mass
+        currentNode.mass += mass
         continue;
       } else if (currentQuadrant == 0 && currentNode.ne != null) {
-        console.log({
-          currentStar: foundStar,
-          previousStar: currentNode.ne.data,
-          quadrant: currentQuadrant,
-          stars: [...stars]
-        });
         //Add again star and previous node
-        stars.unshift(stars[foundIdx]);
-        stars.unshift(currentNode.ne.data);
+        elements.unshift(foundStar);
+        elements.unshift(currentNode.ne.data);
         currentNode.ne = new QuadTreeNode(null, 0);
         //Need split
-        buildQuadTree(
-          stars,
+        completedNode = buildQuadTree(
+          elements,
           currentGridSize / 2,
           quadrants[currentQuadrant].subQuadCenter,
-          quadTree,
           true,
           0,
           quadrants,
@@ -192,27 +181,20 @@ const buildQuadTree = (
 
       if (currentQuadrant == 1 && currentNode.nw == null) {
         currentNode.nw = node;
-        currentNode.mass += 1;
+        currentNode.nw.mass += mass;
+        currentNode.mass += mass;
         continue;
       } else if (currentQuadrant == 1 && currentNode.nw != null) {
-        console.log({
-          currentStar: foundStar,
-          previousStar: currentNode.nw.data,
-          quadrant: currentQuadrant,
-          stars: [...stars]
-
-        });
         //Add again star and previous node
-        stars.unshift(stars[foundIdx]);
-        stars.unshift(currentNode.nw.data);
+        elements.unshift(foundStar);
+        elements.unshift(currentNode.nw.data);
         currentNode.nw = new QuadTreeNode(null, 0);
 
         //Need split
-        buildQuadTree(
-          stars,
+        completedNode = buildQuadTree(
+          elements,
           currentGridSize / 2,
           quadrants[currentQuadrant].subQuadCenter,
-          quadTree,
           true,
           0,
           quadrants,
@@ -224,27 +206,20 @@ const buildQuadTree = (
 
       if (currentQuadrant == 2 && currentNode.se == null) {
         currentNode.se = node;
-        currentNode.mass += 1;
+        currentNode.se.mass += mass;
+        currentNode.mass += mass;
         continue;
       } else if (currentQuadrant == 2 && currentNode.se != null) {
-        console.log({
-          currentStar: foundStar,
-          previousStar: currentNode.se.data,
-          quadrant: currentQuadrant,
-          stars: [...stars]
-
-        });
         //Add again star and previous node
-        stars.unshift(stars[foundIdx]);
-        stars.unshift(currentNode.se.data);
+        elements.unshift(foundStar);
+        elements.unshift(currentNode.se.data);
         currentNode.se = new QuadTreeNode(null, 0);
 
         //Need split
-        buildQuadTree(
-          stars,
+        completedNode = buildQuadTree(
+          elements,
           currentGridSize / 2,
           quadrants[currentQuadrant].subQuadCenter,
-          quadTree,
           true,
           0,
           quadrants,
@@ -256,25 +231,19 @@ const buildQuadTree = (
 
       if (currentQuadrant == 3 && currentNode.sw == null) {
         currentNode.sw = node;
-        currentNode.mass += 1;
+        currentNode.sw.mass += mass;
+        currentNode.mass += mass;
         continue;
       } else if (currentQuadrant == 3 && currentNode.sw != null) {
-        console.log({
-          currentStar: foundStar,
-          previousStar: currentNode.sw.data,
-          quadrant: currentQuadrant,
-          stars: [...stars]
-        });
         //Add again star and previous node
-        stars.unshift(stars[foundIdx]);
-        stars.unshift(currentNode.sw.data);
+        elements.unshift(foundStar);
+        elements.unshift(currentNode.sw.data);
         currentNode.sw = new QuadTreeNode(null, 0);
         //Need split
-        buildQuadTree(
-          stars,
+        completedNode = buildQuadTree(
+          elements,
           currentGridSize / 2,
           quadrants[currentQuadrant].subQuadCenter,
-          quadTree,
           true,
           0,
           quadrants,
@@ -289,6 +258,14 @@ const buildQuadTree = (
       continue;
     }
   }
+
+  // Update parent node mass
+  let neMass = currentNode.ne?.mass || 0;
+  let nwMass = currentNode.nw?.mass || 0;
+  let seMass = currentNode.se?.mass || 0;
+  let swMass = currentNode.sw?.mass || 0;
+
+  currentNode.mass = neMass + nwMass + seMass + swMass;
   // While ended because 4 quadrants completed, return to previous iteration
   return currentNode;
 };
@@ -296,24 +273,25 @@ const buildQuadTree = (
 export const generateQuadTree = (galaxy) => {
   let currentGridSize = COORDINATES_SIZE;
   let currentCenter = new THREE.Vector3(0, 0, 0);
-  let quadTree = new QuadTree();
-  let stars = [...galaxy.stars];
+  let elements = [...galaxy.stars, ...galaxy.planets];
   let needSplit = false;
   let currentQuadrant = 0;
-  let currentNode = new QuadTreeNode(null, 0);
+  let currentNode = new QuadTreeNode(null);
 
   currentGridSize /= 2;
   let quadrants = generate4QuadrantCorners(currentCenter, currentGridSize);
 
+  // debugger;
   const qt = buildQuadTree(
-    stars,
+    elements,
     currentGridSize,
     currentCenter,
-    quadTree,
     needSplit,
     currentQuadrant,
     quadrants,
     currentNode
   );
-  console.log("ended", qt);
+  let quadTree = new QuadTree(qt);
+  console.log(quadTree);
+  return qt;
 };

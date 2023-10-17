@@ -3,6 +3,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 import { Galaxy } from "./objects/galaxy";
 import { generateQuadTree } from "./barnes-hut/quad-tree";
+import { Z_POSITION } from "./config/sceneConfig";
 
 let camera, scene, renderer, controls, orbit;
 let galaxy;
@@ -16,7 +17,7 @@ function init() {
     1,
     10000
   );
-  camera.position.z = 500;
+  camera.position.z = Z_POSITION;
   scene.add(camera);
 
   // Create Galaxy
