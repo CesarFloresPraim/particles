@@ -6,7 +6,7 @@ import { generateQuadTree } from "./barnes-hut/quad-tree";
 import { Z_POSITION } from "./config/sceneConfig";
 
 let camera, scene, renderer, controls, orbit;
-let galaxy;
+let galaxy, quadTree;
 
 function init() {
   scene = new THREE.Scene();
@@ -22,7 +22,9 @@ function init() {
 
   // Create Galaxy
   galaxy = new Galaxy(scene);
-  generateQuadTree(galaxy);
+  quadTree = generateQuadTree(galaxy);
+  console.log(quadTree);
+  galaxy.computeForcesBetweenElements(quadTree);
 
   // Helpers
   //scene.add(new THREE.GridHelper(400, 100));
@@ -49,6 +51,8 @@ function animate() {
   requestAnimationFrame(animate);
   controls.update();
   //galaxy.updateScale(camera);
+  //quadTree = generateQuadTree(galaxy);
+  //galaxy.computeForcesBetweenElements(quadTree);
 
   renderer.render(scene, camera);
 }

@@ -24,13 +24,52 @@ export class Galaxy {
   //   });
   // }
 
+  computeForcesBetweenElements(quadTree) {
+    const preOrderQuadTreeTraversal = (node) => {
+      console.log(node);
+      if (node.ne == null) {
+        return;
+      } else {
+        preOrderQuadTreeTraversal(node.ne);
+      }
+      if (node.nw == null) {
+        return;
+      } else {
+        preOrderQuadTreeTraversal(node.nw);
+      }
+      if (node.se == null) {
+        return;
+      } else {
+        preOrderQuadTreeTraversal(node.se);
+      }
+      if (node.sw == null) {
+        return;
+      } else {
+        preOrderQuadTreeTraversal(node.sw);
+      }
+    };
+
+    let maxDepth = 10;
+    let head = quadTree.head;
+
+    preOrderQuadTreeTraversal(head);
+
+    while (maxDepth > 0) {
+      let distance = maxDepth--;
+    }
+  }
+
   generateObject(num, generator) {
     let objects = [];
     for (let index = 0; index < num; index++) {
       // TODO: ADD GAUSS DISTRIBUTION
       let pos = new THREE.Vector3(
-        Math.random() * (Z_POSITION-(Z_POSITION*.1)) * (Math.random() > 0.5 ? 1 : -1),
-        Math.random() * (Z_POSITION-(Z_POSITION*.1))  * (Math.random() > 0.5 ? 1 : -1),
+        Math.random() *
+          (Z_POSITION - Z_POSITION * 0.1) *
+          (Math.random() > 0.5 ? 1 : -1),
+        Math.random() *
+          (Z_POSITION - Z_POSITION * 0.1) *
+          (Math.random() > 0.5 ? 1 : -1),
         //Math.random() * 400 * (Math.random() > 0.5 ? 1 : -1),
         0
       );

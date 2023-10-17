@@ -8,6 +8,7 @@ class QuadTreeNode {
   constructor(data) {
     this.data = data;
     this.mass = 0;
+    this.centerOfMass = new THREE.Vector3();
     this.ne = null;
     this.nw = null;
     this.se = null;
@@ -135,7 +136,6 @@ const buildQuadTree = (
   quadrants,
   currentNode
 ) => {
-  let completedNode = null;
 
   while (currentQuadrant < 4) {
     if (needSplit) {
@@ -158,7 +158,9 @@ const buildQuadTree = (
       if (currentQuadrant == 0 && currentNode.ne == null) {
         currentNode.ne = node;
         currentNode.ne.mass += mass
+        currentNode.ne.centerOfMass = foundStar.position;
         currentNode.mass += mass
+
         continue;
       } else if (currentQuadrant == 0 && currentNode.ne != null) {
         //Add again star and previous node
@@ -166,7 +168,7 @@ const buildQuadTree = (
         elements.unshift(currentNode.ne.data);
         currentNode.ne = new QuadTreeNode(null, 0);
         //Need split
-        completedNode = buildQuadTree(
+        buildQuadTree(
           elements,
           currentGridSize / 2,
           quadrants[currentQuadrant].subQuadCenter,
@@ -182,6 +184,8 @@ const buildQuadTree = (
       if (currentQuadrant == 1 && currentNode.nw == null) {
         currentNode.nw = node;
         currentNode.nw.mass += mass;
+        currentNode.nw.centerOfMass = foundStar.position;
+
         currentNode.mass += mass;
         continue;
       } else if (currentQuadrant == 1 && currentNode.nw != null) {
@@ -191,7 +195,7 @@ const buildQuadTree = (
         currentNode.nw = new QuadTreeNode(null, 0);
 
         //Need split
-        completedNode = buildQuadTree(
+        buildQuadTree(
           elements,
           currentGridSize / 2,
           quadrants[currentQuadrant].subQuadCenter,
@@ -207,6 +211,7 @@ const buildQuadTree = (
       if (currentQuadrant == 2 && currentNode.se == null) {
         currentNode.se = node;
         currentNode.se.mass += mass;
+        currentNode.se.centerOfMass = foundStar.position;
         currentNode.mass += mass;
         continue;
       } else if (currentQuadrant == 2 && currentNode.se != null) {
@@ -216,7 +221,7 @@ const buildQuadTree = (
         currentNode.se = new QuadTreeNode(null, 0);
 
         //Need split
-        completedNode = buildQuadTree(
+        buildQuadTree(
           elements,
           currentGridSize / 2,
           quadrants[currentQuadrant].subQuadCenter,
@@ -232,6 +237,7 @@ const buildQuadTree = (
       if (currentQuadrant == 3 && currentNode.sw == null) {
         currentNode.sw = node;
         currentNode.sw.mass += mass;
+        currentNode.sw.centerOfMass = foundStar.position;
         currentNode.mass += mass;
         continue;
       } else if (currentQuadrant == 3 && currentNode.sw != null) {
@@ -240,7 +246,7 @@ const buildQuadTree = (
         elements.unshift(currentNode.sw.data);
         currentNode.sw = new QuadTreeNode(null, 0);
         //Need split
-        completedNode = buildQuadTree(
+        buildQuadTree(
           elements,
           currentGridSize / 2,
           quadrants[currentQuadrant].subQuadCenter,
@@ -266,6 +272,17 @@ const buildQuadTree = (
   let swMass = currentNode.sw?.mass || 0;
 
   currentNode.mass = neMass + nwMass + seMass + swMass;
+  
+  let x = 0;
+  let y = 0;
+  let z = 0;
+
+  x = ((currentNode.ne?.centerOfMass.x || 0) * neMass + (currentNode.nw?.centerOfMass.x || 0) * nwMass + (currentNode.se?.centerOfMass.x || 0) * seMass + (currentNode.sw?.centerOfMass.x || 0) * swMass) / currentNode.mass;
+  y = ((currentNode.ne?.centerOfMass.y || 0) * neMass + (currentNode.nw?.centerOfMass.y || 0) * nwMass + (currentNode.se?.centerOfMass.y || 0) * seMass + (currentNode.sw?.centerOfMass.y || 0) * swMass) / currentNode.mass;
+  z = ((currentNode.ne?.centerOfMass.z || 0) * neMass + (currentNode.nw?.centerOfMass.z || 0) * nwMass + (currentNode.se?.centerOfMass.z || 0) * seMass + (currentNode.sw?.centerOfMass.z || 0) * swMass) / currentNode.mass;
+
+
+  currentNode.centerOfMass = new THREE.Vector3(x,y,z);
   // While ended because 4 quadrants completed, return to previous iteration
   return currentNode;
 };
@@ -292,6 +309,5 @@ export const generateQuadTree = (galaxy) => {
     currentNode
   );
   let quadTree = new QuadTree(qt);
-  console.log(quadTree);
-  return qt;
+  return quadTree;
 };
