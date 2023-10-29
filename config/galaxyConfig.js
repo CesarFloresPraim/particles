@@ -1,5 +1,9 @@
-export const NUM_STARS = 2
-export const NUM_PLANETS = 8
+export const NUM_STARS = 10
+export const NUM_PLANETS = 100
+export const DEVIATION = 0.5
+export const NUM_ITERATIONS = 5000
+
+
 export const NUM_ARMS = 4
 
 export const GALAXY_THICKNESS = 5

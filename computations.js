@@ -23,7 +23,7 @@ const computeForce = (circle, circle2, scene) => {
   const circleMass = computeMass(circle);
   const circle2Mass = computeMass(circle2);
 
-  const gmmr = (0.00005 * (circleMass * circle2Mass)) / (distance * distance);
+  const gmmr = (105 * (circleMass * circle2Mass)) / (distance * distance);
 
   const force = new Vector3();
   force.subVectors(circle2.position, circle.position);

@@ -7,9 +7,12 @@ const texture = new THREE.TextureLoader().load("../resources/planetSprite.png");
 const material = new THREE.SpriteMaterial({ map: texture })
 
 export class Planet {
-  constructor(position) {
+  constructor(position, velocity) {
     this.type = this.generatetype();
     this.position = position;
+    this.velocity = velocity;
+    this.mass = Math.random() * 1000 + 100;
+    this.radius = Math.random() * 7 + 1.5
     this.obj = null;
   }
 
@@ -24,7 +27,11 @@ export class Planet {
 //   }
 
   getMass() {
-    return planetTypes.mass[this.type];
+    return this.mass
+  }
+
+  getRadius() {
+    return this.radius
   }
 
   generatetype() {
@@ -43,7 +50,7 @@ export class Planet {
     let sprite = new THREE.Sprite(material);
     // sprite.layers.set(BLOOM_LAYER);
 
-    sprite.scale.multiplyScalar(planetTypes.size[this.type]);
+    sprite.scale.multiplyScalar(this.radius);
     sprite.position.copy(this.position);
 
     this.obj = sprite;

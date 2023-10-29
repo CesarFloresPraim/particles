@@ -4,14 +4,15 @@ import { BLOOM_LAYER, STAR_MAX, STAR_MIN } from "../config/renderConfig";
 import { clamp } from "../utils.js";
 
 const texture = new THREE.TextureLoader().load("../resources/sprite120.png");
-const materials = starTypes.color.map(
-  (color) => new THREE.SpriteMaterial({ map: texture, color: color })
-);
+const material = new THREE.SpriteMaterial({ map: texture, color: 0xffff00 })
+
 
 export class Star {
-  constructor(position) {
-    this.type = this.generatetype();
+  constructor(position, velocity) {
     this.position = position;
+    this.velocity = velocity;
+    this.mass = Math.random() * 5000 + 1000;
+    this.radius = Math.random() * 20 + 8;
     this.obj = null;
   }
 
@@ -26,7 +27,11 @@ export class Star {
   // }
 
   getMass() {
-    return starTypes.mass[this.type];
+    return this.mass;
+  }
+
+  getRadius() {
+    return this.radius;
   }
 
   generatetype() {
@@ -42,10 +47,10 @@ export class Star {
   }
 
   toThreeObject(scene) {
-    let sprite = new THREE.Sprite(materials[this.type]);
+    let sprite = new THREE.Sprite(material);
     // sprite.layers.set(BLOOM_LAYER);
 
-    sprite.scale.multiplyScalar(starTypes.size[this.type]);
+    sprite.scale.multiplyScalar(this.radius);
     sprite.position.copy(this.position);
 
     this.obj = sprite;

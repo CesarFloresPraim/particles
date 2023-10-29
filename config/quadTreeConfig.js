@@ -1,0 +1,1 @@
+export const MAX_QUADRANT_CHILDREN = 2;

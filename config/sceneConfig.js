@@ -1,1 +1,1 @@
-export const Z_POSITION = 5000;
+export const Z_POSITION = 1500;

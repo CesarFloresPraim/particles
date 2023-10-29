@@ -2,8 +2,9 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 import { Galaxy } from "./objects/galaxy";
-import { generateQuadTree } from "./barnes-hut/quad-tree";
+import { generateQuadTree, generateQuadTree2 } from "./barnes-hut/quad-tree";
 import { Z_POSITION } from "./config/sceneConfig";
+import { NUM_ITERATIONS } from "./config/galaxyConfig";
 
 let camera, scene, renderer, controls, orbit;
 let galaxy, quadTree;
@@ -22,9 +23,16 @@ function init() {
 
   // Create Galaxy
   galaxy = new Galaxy(scene);
-  quadTree = generateQuadTree(galaxy);
-  console.log(quadTree);
-  galaxy.computeForcesBetweenElements(quadTree);
+  // quadTree = generateQuadTree(galaxy);
+  // galaxy.gravity(quadTree);
+  // console.log(galaxy.stars);
+  // galaxy.planets.forEach((element) => {
+  //   //console.log(element);
+  //   element.position.add(element.velocity);
+  // });
+
+  quadTree = generateQuadTree2(galaxy);
+  console.log({...quadTree});
 
   // Helpers
   //scene.add(new THREE.GridHelper(400, 100));
@@ -43,16 +51,33 @@ function init() {
   controls.maxPolarAngle = Math.PI / 2 - Math.PI / 360;
   controls.update();
 
-
   document.body.appendChild(renderer.domElement);
 }
+
+var index = 0;
 
 function animate() {
   requestAnimationFrame(animate);
   controls.update();
   //galaxy.updateScale(camera);
-  //quadTree = generateQuadTree(galaxy);
-  //galaxy.computeForcesBetweenElements(quadTree);
+
+  // if (index < 1000) {
+  //   quadTree = generateQuadTree(galaxy);
+  //   galaxy.gravity(quadTree);
+  //   debugger;
+  //   console.log(index, { quadTree });
+  //   galaxy.planets.forEach((element) => {
+  //     //console.log(element);
+  //     element.obj.position.add(element.velocity);
+  //     element.position.add(element.velocity);
+  //   });
+  //   galaxy.stars.forEach((element) => {
+  //     //console.log(element);
+  //     element.obj.position.add(element.velocity);
+  //     element.position.add(element.velocity);
+  //   });
+  //   index++;
+  // }
 
   renderer.render(scene, camera);
 }
